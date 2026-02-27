@@ -19,13 +19,14 @@ namespace OpenCartSDET.Core
             Browser = await Playwright.Chromium.LaunchAsync(
                 new BrowserTypeLaunchOptions
                 {
-                    Headless = false
+                    Headless = false,
+                    SlowMo = 200
                 });
 
             Context = await Browser.NewContextAsync();
             Page = await Context.NewPageAsync();
 
-            await Page.GotoAsync("https://demo.opencart.com/");
+            await Page.GotoAsync("https://parabank.parasoft.com/parabank/index.htm");
         }
 
         [TearDown]

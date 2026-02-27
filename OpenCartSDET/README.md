@@ -1,91 +1,113 @@
-﻿# OpenCart SDET Take-Home Assignment
-Flow 4 – Cart Management & Price Validation
+﻿# SDET Take-Home Assignment
+## Application: Parabank
+## Scenario: Fund Transfer & Balance Validation
 
-## 🔹 Tech Stack
+---
+
+## Overview
+
+This project validates the Fund Transfer functionality of the Parabank application using C# and Playwright (.NET).
+
+The focus of this implementation is business logic validation — specifically, verifying that account balances are updated correctly after a transfer operation.
+
+---
+
+## Technology Stack
 
 - Language: C#
-- Framework: .NET 10
-- UI Automation: Microsoft Playwright for .NET
+- Framework: .NET 8 / 10
+- UI Automation: Playwright for .NET
 - Test Framework: NUnit
-- Assertion Library: FluentAssertions
+- Assertions: FluentAssertions
 - Design Pattern: Page Object Model (POM)
 
 ---
 
-## 🔹 Project Structure
+## Project Structure
 
-OpenCartSDET
-│
-├── Core
-│   └── BaseTest.cs
-│
-├── Pages
-│   ├── HomePage.cs
-│   ├── ProductPage.cs
-│   └── CartPage.cs
-│
-├── Tests
-│   └── CartTests.cs
-│
-└── README.md
+OpenCartSDET  
+│  
+├── Core  
+│   └── BaseTest.cs  
+│  
+├── Pages  
+│   ├── LoginPage.cs  
+│   ├── AccountsPage.cs  
+│   └── TransferPage.cs  
+│  
+├── Tests  
+│   └── ParabankTests.cs  
+│  
+├── README.md  
+└── TestStrategy.md  
 
 ---
 
-## 🔹 Setup Instructions
+## Design Decisions
 
-1. Install:
-   - .NET 8 or later
-   - Visual Studio 2022
+### 1. Page Object Model
+All UI interactions are encapsulated within dedicated Page classes to maintain separation between test logic and UI behavior.
 
-2. Clone repository:
-   git clone <repo-url>
+### 2. Synchronization Strategy
+Explicit waits are used for:
+- URL transitions
+- Element visibility
+- Post-transfer confirmation
 
-3. Navigate to project folder:
-   cd OpenCartSDET
+This avoids brittle timing dependencies.
 
-4. Restore dependencies:
+### 3. Dynamic Business Validation
+Balances are captured dynamically before and after transfer. Assertions validate delta changes rather than fixed values.
+
+### 4. Defensive Automation
+The demo environment may provide only one account. The implementation dynamically detects account availability to prevent false negatives.
+
+---
+
+## How to Run
+
+1. Clone the repository
+2. Navigate to project folder
+3. Restore dependencies:
+
    dotnet restore
 
-5. Install Playwright browsers:
-   dotnet build
-   .\bin\Debug\net10.0\playwright.ps1 install
+4. Install Playwright browsers:
 
-6. Run tests:
-   dotnet test
+   dotnet build  
+   .\bin\Debug\net10.0\playwright.ps1 install  
 
----
+5. Execute tests:
 
-## 🔹 Implemented Test Scenarios
+   dotnet test  
 
-### 1. Add Product & Validate Total Price
-- Open product
-- Capture unit price
-- Update quantity
-- Add to cart
-- Validate total = unit price × quantity
-
-### 2. Remove Product From Cart
-- Add product
-- Navigate to cart
-- Remove product
-- Validate cart empty message
+Or run via Test Explorer in Visual Studio.
 
 ---
 
-## 🔹 Design Decisions
+## Scenario Covered
 
-- Page Object Model for maintainability
-- Async/Await for non-blocking execution
-- FluentAssertions for readable validation
-- Dynamic price calculation (no hardcoded values)
-- Independent & repeatable test cases
+### Transfer Funds & Validate Balances
+
+- Login using demo credentials
+- Capture initial account balances
+- Perform transfer of fixed amount (100)
+- Validate confirmation message
+- Re-fetch balances
+- Validate financial correctness
 
 ---
 
-## 🔹 Future Improvements
+## Possible Enhancements
 
-- Add CI/CD pipeline (GitHub Actions)
-- Add parallel execution
-- Add HTML reporting
-- Add retry mechanism
-- Add screenshot capture on failure
+- Screenshot capture on failure
+- Structured logging
+- CI/CD integration (GitHub Actions)
+- Parallel test execution
+- Data-driven testing
+
+---
+
+## Notes
+
+This implementation focuses on correctness of financial state transitions rather than UI-only verification. Emphasis has been placed on maintainability, synchronization reliability, and defensive automation design.

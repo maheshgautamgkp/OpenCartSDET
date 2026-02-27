@@ -1,90 +1,105 @@
-﻿# Test Strategy – Cart Management & Price Validation
+﻿# Test Strategy
+## Parabank – Fund Transfer & Balance Validation
 
-## 1. Objective
+### 1. Objective
 
-Validate cart functionality and price calculation logic on OpenCart demo application.
+The objective of this assignment is to validate the correctness of the Fund Transfer functionality in the Parabank application, with a strong focus on business logic and financial calculations.
 
-URL: https://demo.opencart.com
+The primary goal is to ensure that account balances are updated accurately after a transfer operation and that the system maintains financial consistency.
 
 ---
 
-## 2. Scope
+### 2. Scope
 
-### In Scope
-- Add product to cart
-- Update product quantity
-- Validate unit price
-- Validate total calculation
-- Remove product from cart
+#### In Scope
+- User login with valid credentials
+- Navigation to Accounts Overview
+- Capturing account balances
+- Performing fund transfer between accounts
+- Verifying transfer confirmation
+- Validating post-transaction balance updates
 
-### Out of Scope
-- Payment gateway validation
-- Backend API validation
+#### Out of Scope
+- User registration flow
+- Loan processing
+- Bill payment functionality
 - Performance testing
-- Security testing
+- Security and penetration testing
+- API-level validation
 
 ---
 
-## 3. Test Levels
+### 3. Test Levels Covered
 
-- UI Testing (End-to-End)
+- End-to-End UI Testing
 - Functional Testing
 - Business Logic Validation
+- Financial Calculation Verification
 
 ---
 
-## 4. Test Types
+### 4. Core Business Validation
 
-- Positive Testing
-- Boundary Testing (Quantity)
-- Regression Testing
-- UI Automation
+The primary validation logic ensures:
 
----
+- Source Account Balance decreases by transfer amount
+- Destination Account Balance increases by transfer amount
+- Transfer confirmation message is displayed
+- No unexpected state corruption occurs
 
-## 5. Key Test Scenarios
-
-1. Add product with quantity > 1 and validate total
-2. Remove product and validate empty cart message
-3. Validate calculation logic dynamically
+Special handling is implemented for demo environments where only a single account exists. In such cases, defensive validation ensures test stability without false failures.
 
 ---
 
-## 6. Assumptions
+### 5. Test Approach
 
-- Product prices remain constant during execution
-- No login required
-- Tax calculation remains consistent
+#### Automation Design Principles
 
----
+- Page Object Model (POM) for separation of concerns
+- Explicit synchronization (WaitForURL / WaitForSelector)
+- No hardcoded balance values
+- Dynamic extraction of financial data
+- Defensive handling of demo environment variability
 
-## 7. Risks
+#### Data Strategy
 
-- UI locator instability
-- Demo site availability
-- Currency formatting changes
-
----
-
-## 8. Automation Strategy
-
-- Playwright for .NET used
-- Page Object Model design
-- Explicit navigation and validation
-- Independent test execution
+- Uses demo credentials (`john/demo`)
+- Fixed transfer amount (100)
+- Balance values extracted dynamically at runtime
+- No assumptions about pre-existing balances
 
 ---
 
-## 9. Test Data Strategy
+### 6. Risk Assessment
 
-- Using publicly available demo products
-- Dynamic extraction of price from UI
-- Avoiding hardcoded values
+| Risk | Mitigation |
+|------|------------|
+| Demo site instability | Explicit waits and retry-safe structure |
+| Account count variability | Dynamic option detection |
+| Formatting differences in currency | String sanitization before parsing |
+| Test data mutation across runs | Validation based on delta, not fixed values |
 
 ---
 
-## 10. Reporting
+### 7. Assumptions
 
-- NUnit test results
-- Console output
-- Extensible for CI/CD integration
+- User has at least one valid account
+- Sufficient balance is available for transfer
+- Demo site behavior remains functionally consistent
+
+---
+
+### 8. Automation Scalability
+
+The framework is designed to be extensible:
+
+- Additional flows can be added via new Page classes
+- Supports parallel execution
+- Can integrate CI pipelines
+- Can be extended with reporting and logging layers
+
+---
+
+### 9. Conclusion
+
+The implemented solution validates financial state transitions rather than UI-only behavior. The focus remains on correctness of business logic, reliability, and maintainability of automation design.
