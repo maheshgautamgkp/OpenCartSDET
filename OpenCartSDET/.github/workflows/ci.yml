@@ -1,8 +1,8 @@
-﻿name: BDD Automation CI
+name: BDD Automation CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, Parabank_Test ]
   pull_request:
     branches: [ main ]
 
@@ -22,13 +22,11 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore
 
-      - name: Build Solution
-        run: dotnet build --configuration Release --no-restore
+      - name: Build Project
+        run: dotnet build --configuration Debug
 
       - name: Install Playwright Browsers
-        run: |
-          dotnet build
-          pwsh bin/Release/net10.0/playwright.ps1 install
+        run: pwsh OpenCartSDET/bin/Debug/net10.0/playwright.ps1 install
 
       - name: Run Tests
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet test --configuration Debug --no-build
