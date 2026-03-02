@@ -1,100 +1,174 @@
-# SDET Take-Home Assignment
-## Application: Parabank
-## Scenario: Fund Transfer & Balance Validation
+# SDET Assignment  
+## Application: Parabank  
+## Scenario: Fund Transfer & Balance Validation (BDD Implementation)
 
 ---
 
 ## Overview
 
-This project validates the Fund Transfer functionality of the Parabank application using C# and Playwright (.NET).
+This project automates and validates the Fund Transfer functionality of the Parabank application using a Behavior Driven Development (BDD) approach.
 
-The focus of this implementation is business logic validation — specifically, verifying that account balances are updated correctly after a transfer operation.
+The primary focus of this implementation is **financial business logic validation**, ensuring that account balances are updated correctly after a transfer operation.
+
+The framework is designed for scalability, maintainability, and CI/CD readiness.
 
 ---
 
 ## Technology Stack
 
 - Language: C#
-- Framework: .NET 8 / 10
+- Framework: .NET 10
+- BDD Framework: SpecFlow
 - UI Automation: Playwright for .NET
 - Test Framework: NUnit
 - Assertions: FluentAssertions
 - Design Pattern: Page Object Model (POM)
+- CI/CD: GitHub Actions
 
 ---
 
-## Project Structure
+## Architecture Overview
+
+The framework follows a layered automation architecture:
 
 OpenCartSDET  
 │  
 ├── Core  
-│   └── BaseTest.cs  
+│   └── BaseTest.cs (Browser lifecycle management)  
 │  
 ├── Pages  
 │   ├── LoginPage.cs  
 │   ├── AccountsPage.cs  
 │   └── TransferPage.cs  
 │  
-├── Tests  
-│   └── ParabankTests.cs  
+├── Features  
+│   └── TransferFunds.feature (BDD Scenario)  
+│  
+├── StepDefinitions  
+│   └── TransferSteps.cs 
 │  
 ├── README.md  
 └── TestStrategy.md  
 
 ---
 
-## Design Decisions
+## BDD Approach
 
-### 1. Page Object Model
-All UI interactions are encapsulated within dedicated Page classes to maintain separation between test logic and UI behavior.
+The solution uses SpecFlow to define behavior in Gherkin format:
 
-### 2. Synchronization Strategy
-Explicit waits are used for:
-- URL transitions
-- Element visibility
-- Post-transfer confirmation
+Example Scenario:
 
-This avoids brittle timing dependencies.
+- Given the user logs into Parabank  
+- And the user captures initial account balances  
+- When the user transfers 100 dollars  
+- Then the transfer should be successful  
+- And account balances should be updated correctly  
 
-### 3. Dynamic Business Validation
-Balances are captured dynamically before and after transfer. Assertions validate delta changes rather than fixed values.
+This ensures:
 
-### 4. Defensive Automation
-The demo environment may provide only one account. The implementation dynamically detects account availability to prevent false negatives.
+- Clear business readability
+- Alignment between requirement and automation
+- Separation of behavior and implementation
 
 ---
 
-## How to Run
+## Design Decisions
+
+### 1. Page Object Model (POM)
+
+All UI interactions are encapsulated in Page classes.  
+This ensures separation of concerns and maintainability.
+
+### 2. Explicit Synchronization
+
+The framework uses:
+
+- WaitForURLAsync
+- WaitForSelectorAsync
+
+Thread.Sleep is intentionally avoided to reduce flakiness.
+
+### 3. Financial Validation Strategy
+
+Balances are captured dynamically before and after transfer.
+
+Assertions validate:
+
+- Source account decreases by transfer amount
+- Destination account increases by transfer amount
+
+Validation is delta-based, not dependent on hardcoded values.
+
+### 4. Defensive Automation
+
+Demo environment variability is handled by:
+
+- Dynamic dropdown option detection
+- Currency sanitization before parsing
+- Decimal-based financial comparison
+
+---
+
+## CI/CD Integration
+
+This project includes a GitHub Actions pipeline that:
+
+- Restores .NET dependencies
+- Builds the project
+- Installs Playwright browsers
+- Executes BDD test scenarios
+
+The pipeline runs automatically on push and pull requests.
+
+This ensures:
+
+- Continuous validation
+- Early failure detection
+- Automation stability
+
+---
+
+## How to Run Locally
 
 1. Clone the repository
-2. Navigate to project folder
-3. Restore dependencies:
+2. Navigate to repository root
 
    dotnet restore
 
-4. Install Playwright browsers:
+3. Build the project
 
-   dotnet build  
-   .\bin\Debug\net10.0\playwright.ps1 install  
+   dotnet build
 
-5. Execute tests:
+4. Install Playwright browsers
 
-   dotnet test  
+   pwsh OpenCartSDET/bin/Debug/net10.0/playwright.ps1 install
 
-Or run via Test Explorer in Visual Studio.
+5. Run tests
+
+   dotnet test
+
+You can also execute tests via Visual Studio Test Explorer.
 
 ---
 
 ## Scenario Covered
 
-### Transfer Funds & Validate Balances
+### Fund Transfer & Balance Validation
 
 - Login using demo credentials
-- Capture initial account balances
-- Perform transfer of fixed amount (100)
-- Validate confirmation message
-- Re-fetch balances
+- Capture initial balances
+- Transfer fixed amount (100)
+- Validate transfer confirmation
+- Re-capture balances
 - Validate financial correctness
+
+---
+
+## SOLID Principles Applied
+
+- Single Responsibility Principle – Each class has a single responsibility.
+- Open/Closed Principle – Framework is extendable without modifying core logic.
+- Dependency Inversion Principle – Pages depend on Playwright abstractions.
 
 ---
 
@@ -102,12 +176,15 @@ Or run via Test Explorer in Visual Studio.
 
 - Screenshot capture on failure
 - Structured logging
-- CI/CD integration (GitHub Actions)
+- Allure or HTML reporting
 - Parallel test execution
-- Data-driven testing
+- Data-driven BDD scenarios
+- Dockerized test execution
 
 ---
 
-## Notes
+## Conclusion
 
-This implementation focuses on correctness of financial state transitions rather than UI-only verification. Emphasis has been placed on maintainability, synchronization reliability, and defensive automation design.
+This implementation focuses on validating financial state transitions rather than UI-only behavior.
+
+By combining BDD principles, robust synchronization, financial precision handling, and CI/CD integration, the solution demonstrates a scalable and production-ready automation design aligned with modern SDET practices.
