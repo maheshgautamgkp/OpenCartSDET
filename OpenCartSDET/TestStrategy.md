@@ -1,105 +1,179 @@
-﻿# Test Strategy
-## Parabank – Fund Transfer & Balance Validation
-
-### 1. Objective
-
-The objective of this assignment is to validate the correctness of the Fund Transfer functionality in the Parabank application, with a strong focus on business logic and financial calculations.
-
-The primary goal is to ensure that account balances are updated accurately after a transfer operation and that the system maintains financial consistency.
+# Test Strategy  
+## Parabank – Fund Transfer & Balance Validation (BDD Implementation)
 
 ---
 
-### 2. Scope
+## 1. Objective
 
-#### In Scope
-- User login with valid credentials
+The objective of this assignment is to validate the correctness of the Fund Transfer functionality in the Parabank application using a Behavior Driven Development (BDD) approach.
+
+The primary focus is on verifying financial business logic, ensuring that account balances are accurately updated after a transfer operation and that transactional state transitions are correct.
+
+The automation solution emphasizes maintainability, reliability, and business-level validation rather than UI-only verification.
+
+---
+
+## 2. Scope
+
+### In Scope
+
+- User authentication (login)
 - Navigation to Accounts Overview
-- Capturing account balances
-- Performing fund transfer between accounts
-- Verifying transfer confirmation
-- Validating post-transaction balance updates
+- Dynamic extraction of account balances
+- Transfer of funds between accounts
+- Validation of transfer confirmation message
+- Validation of financial balance updates
+- CI/CD execution of automated tests
 
-#### Out of Scope
-- User registration flow
-- Loan processing
+### Out of Scope
+
+- User registration
+- Loan requests
 - Bill payment functionality
 - Performance testing
-- Security and penetration testing
+- Security testing
 - API-level validation
 
 ---
 
-### 3. Test Levels Covered
+## 3. Test Levels Covered
 
 - End-to-End UI Testing
 - Functional Testing
 - Business Logic Validation
 - Financial Calculation Verification
+- CI Pipeline Validation
 
 ---
 
-### 4. Core Business Validation
+## 4. Test Approach – BDD Driven
 
-The primary validation logic ensures:
+The solution is implemented using **SpecFlow (BDD framework)** with Gherkin syntax.
 
-- Source Account Balance decreases by transfer amount
-- Destination Account Balance increases by transfer amount
-- Transfer confirmation message is displayed
-- No unexpected state corruption occurs
+### Feature Representation
 
-Special handling is implemented for demo environments where only a single account exists. In such cases, defensive validation ensures test stability without false failures.
+Business behavior is described using:
+
+- Feature
+- Scenario
+- Given / When / Then
+
+This ensures that test scenarios are readable, business-aligned, and traceable.
+
+Example scenario:
+
+- Given the user logs into Parabank  
+- And the user captures initial account balances  
+- When the user transfers 100 dollars  
+- Then the transfer should be successful  
+- And account balances should be updated correctly  
+
+This bridges the gap between business requirements and technical implementation.
 
 ---
 
-### 5. Test Approach
+## 5. Core Business Validation
 
-#### Automation Design Principles
+The automation validates:
 
-- Page Object Model (POM) for separation of concerns
-- Explicit synchronization (WaitForURL / WaitForSelector)
-- No hardcoded balance values
-- Dynamic extraction of financial data
-- Defensive handling of demo environment variability
+- Source account balance decreases by the transfer amount
+- Destination account balance increases by the transfer amount
+- Transfer confirmation is displayed
+- No unexpected balance corruption occurs
 
-#### Data Strategy
+To handle demo environment variability, defensive logic detects account availability dynamically to avoid brittle assumptions.
 
-- Uses demo credentials (`john/demo`)
+---
+
+## 6. Automation Design Principles
+
+### 6.1 Architecture
+
+The framework follows a layered design:
+
+- Feature Layer (BDD scenarios)
+- Step Definition Layer (Glue logic)
+- Page Object Layer (UI abstraction)
+- Test Infrastructure Layer (Browser lifecycle management)
+
+### 6.2 Design Patterns Used
+
+- Page Object Model (POM)
+- Constructor-based Dependency Injection
+- Explicit Synchronization Strategy
+- Defensive Automation Strategy
+
+### 6.3 SOLID Principles Applied
+
+- **Single Responsibility Principle** – Each class has one responsibility.
+- **Open/Closed Principle** – Framework can be extended with new features without modifying existing logic.
+- **Dependency Inversion Principle** – Page classes depend on abstractions (IPage) rather than concrete implementations.
+
+---
+
+## 7. Synchronization Strategy
+
+Explicit synchronization is implemented using:
+
+- WaitForURLAsync
+- WaitForSelectorAsync
+
+Thread.Sleep is avoided to reduce flakiness and ensure deterministic execution.
+
+---
+
+## 8. Test Data Strategy
+
+- Uses demo credentials (john/demo)
 - Fixed transfer amount (100)
 - Balance values extracted dynamically at runtime
-- No assumptions about pre-existing balances
+- No hardcoded financial values
+- Validation performed using delta comparison (Before vs After)
+
+Financial calculations are handled using the `decimal` data type to ensure precision.
 
 ---
 
-### 6. Risk Assessment
+## 9. Risk Assessment
 
 | Risk | Mitigation |
 |------|------------|
-| Demo site instability | Explicit waits and retry-safe structure |
-| Account count variability | Dynamic option detection |
-| Formatting differences in currency | String sanitization before parsing |
-| Test data mutation across runs | Validation based on delta, not fixed values |
+| Demo site instability | Explicit waits and resilient selectors |
+| Account count variability | Dynamic dropdown detection |
+| Currency formatting differences | Sanitization before parsing |
+| Test data mutation | Delta-based validation approach |
+| CI environment differences | Automated Playwright browser installation |
 
 ---
 
-### 7. Assumptions
+## 10. CI/CD Integration
 
-- User has at least one valid account
-- Sufficient balance is available for transfer
-- Demo site behavior remains functionally consistent
+A GitHub Actions pipeline is implemented to:
 
----
+- Restore .NET dependencies
+- Build the project
+- Install Playwright browsers
+- Execute SpecFlow BDD tests
 
-### 8. Automation Scalability
-
-The framework is designed to be extensible:
-
-- Additional flows can be added via new Page classes
-- Supports parallel execution
-- Can integrate CI pipelines
-- Can be extended with reporting and logging layers
+The pipeline runs automatically on push and pull requests, ensuring continuous validation of the automation suite.
 
 ---
 
-### 9. Conclusion
+## 11. Scalability & Extensibility
 
-The implemented solution validates financial state transitions rather than UI-only behavior. The focus remains on correctness of business logic, reliability, and maintainability of automation design.
+The framework is designed to support:
+
+- Additional banking flows
+- Data-driven scenarios
+- Parallel test execution
+- Integration with reporting tools
+- Screenshot capture on failure
+- CI/CD extensions
+
+---
+
+## 12. Conclusion
+
+This implementation focuses on validating financial state transitions rather than superficial UI verification.
+
+By combining BDD principles, robust synchronization, financial precision handling, and CI/CD automation, the solution demonstrates a scalable and maintainable automation design aligned with real-world SDET expectations.
